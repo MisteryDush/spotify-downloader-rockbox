@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "spotdl"
+name = "spotdl_rockbox"
 version = "4.2.5"
-description = "Download your Spotify playlists and songs along with album art and metadata"
+description = "Fox for rockbox. Download your Spotify playlists and songs along with album art and metadata"
 license = "MIT"
-authors = ["spotDL Team <spotdladmins@googlegroups.com>"]
+authors = ["spotDL Team <spotdladmins@googlegroups.com>", "MisteryDush <ikrom.arifdjanov@gmail.com>"]
 maintainers = ["xnetcat <xnetcat.dev@gmail.com>"]
 readme = "README.md"
-repository = "https://github.com/spotDL/spotify-downloader.git"
+repository = "https://github.com/MisteryDush/spotify-downloader-rockbox.git"
 homepage = "https://github.com/spotDL/spotify-downloader/"
 documentation = "https://spotdl.rtfd.io/en/latest/"
 keywords = ["spotify", "downloader", "spotdl", "music"]
