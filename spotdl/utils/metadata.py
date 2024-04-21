@@ -243,18 +243,6 @@ def embed_metadata(
 
         audio_file = ID3(str(output_file.resolve()))
 
-        audio_file.add(WOAS(encoding=3, url=song.url))
-
-        if song.download_url:
-            audio_file.add(COMM(encoding=3, text=song.download_url))
-
-        if song.popularity:
-            audio_file.add(
-                POPM(
-                    rating=int(song.popularity * 255 / 100),
-                )
-            )
-
     if not skip_album_art:
         # Embed album art
         audio_file = embed_cover(audio_file, song, encoding)
@@ -323,10 +311,9 @@ def embed_cover(audio_file, song: Song, encoding: str):
         if "APIC:Cover" in audio_file.keys():
             audio_file.pop("APIC:Cover")
         audio_file["APIC"] = APIC(
-            encoding=3,
+            encoding=0,
             mime="image/jpeg",
             type=3,
-            desc="Cover",
             data=cover_data,
         )
 
@@ -358,7 +345,7 @@ def embed_lyrics(audio_file, song: Song, encoding: str):
         # Lyrics are not in lrc format
         # Embed them normally
         if encoding == "mp3":
-            audio_file.add(USLT(encoding=Encoding.UTF8, text=song.lyrics))
+            audio_file.add(USLT(encoding=Encoding.UTF16, text=song.lyrics))
         else:
             audio_file[tag_preset["lyrics"]] = song.lyrics
     else:
@@ -580,18 +567,10 @@ def embed_wav_file(output_file: Path, song: Song):
     audio.tags.add(TIT2(encoding=3, text=song.name))  # type: ignore
     audio.tags.add(TPE1(encoding=3, text=song.artists))  # type: ignore
     audio.tags.add(TALB(encoding=3, text=song.album_name))  # type: ignore
-    audio.tags.add(TCOM(encoding=3, text=song.publisher))  # type: ignore
     audio.tags.add(TCON(encoding=3, text=song.genres))  # type: ignore
-    audio.tags.add(TDRC(encoding=3, text=song.date))  # type: ignore
     audio.tags.add(  # type: ignore
         TRCK(encoding=3, text=f"{song.track_number}/{song.tracks_count}")  # type: ignore
     )
-    audio.tags.add(TDRC(encoding=3, text=song.date))  # type: ignore
-    audio.tags.add(WOAS(encoding=3, text=song.url))  # type: ignore
-    audio.tags.add(TSRC(encoding=3, text=song.isrc))  # type: ignore
-
-    if song.download_url:
-        audio.tags.add(COMM(encoding=3, text=song.download_url))  # type: ignore
 
     if song.copyright_text:
         audio.tags.add(TCOP(encoding=3, text=song.copyright_text))  # type: ignore
@@ -610,7 +589,7 @@ def embed_wav_file(output_file: Path, song: Song):
             cover_data = requests.get(song.cover_url, timeout=10).content
             audio.tags.add(  # type: ignore
                 APIC(
-                    encoding=3, mime="image/jpeg", type=3, desc="Cover", data=cover_data
+                    encoding=0, mime="image/jpeg", type=3, desc="Cover", data=cover_data
                 )
             )
         except Exception:
@@ -623,7 +602,7 @@ def embed_wav_file(output_file: Path, song: Song):
         lrc_lines = [line for line in lrc_lines if line and LRC_REGEX.match(line)]
 
         if len(lrc_lines) == 0:
-            audio.tags.add(USLT(encoding=Encoding.UTF8, text=song.lyrics))  # type: ignore
+            audio.tags.add(USLT(encoding=Encoding.UTF16, text=song.lyrics))  # type: ignore
         else:
             lrc_data = []
             clean_lyrics = remomve_lrc(song.lyrics)
